@@ -51,6 +51,8 @@ public class Sheet extends javax.swing.JPanel {
     private java.util.List<Translation> translations = new java.util.ArrayList<>();
     private java.util.List<smallboxforfansub.drawing.ornament.IShape> oml = new java.util.ArrayList<>();
     
+    private boolean hasGrid = false;
+    
     public Sheet(){
         setLayout(null);
     }
@@ -139,6 +141,11 @@ public class Sheet extends javax.swing.JPanel {
         
         //Dessine les axes correspondant au curseur de la souris.
         g2d.setColor(Color.pink);
+        if(hasGrid==true){
+            java.awt.Point p = getGridCoordinates(mouseX, mouseY);
+            mouseX = p.x;
+            mouseY = p.y;
+        }
         g2d.drawLine(mouseX, 0, mouseX, getHeight());
         g2d.drawLine(0, mouseY, getWidth(), mouseY);
 
@@ -976,5 +983,21 @@ public class Sheet extends javax.swing.JPanel {
     public void updateOrnamentForMain(java.util.List<smallboxforfansub.drawing.ornament.IShape> oml){
         this.oml = oml;
         repaint();
+    }
+    
+    public void updateGrid(boolean hasGrid){
+        this.hasGrid = hasGrid;
+        repaint();
+    }
+    
+    public static java.awt.Point getGridCoordinates(int x, int y){
+        //On compte combien de fois on trouve le nombre 25 dans x et y
+        float nX = x/25f;
+        float nY = y/25f;
+        //On arrondit et on multiplie ce chiffre pour se positionner sur la grille
+        int newX = Math.round(nX) * 25;
+        int newY = Math.round(nY) * 25;
+        //On retourne le nouveau point        
+        return new java.awt.Point(newX, newY);
     }
 }

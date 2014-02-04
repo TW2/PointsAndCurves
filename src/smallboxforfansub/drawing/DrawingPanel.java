@@ -68,6 +68,7 @@ import smallboxforfansub.drawing.renderer.RememberRenderer;
 import smallboxforfansub.drawing.renderer.ScriptsListRenderer;
 import smallboxforfansub.drawing.svg.VectorObject;
 import smallboxforfansub.drawing.svg.XmlVectorHandler;
+import smallboxforfansub.drawing.svg.XmlVectorWriter;
 import smallboxforfansub.scripting.DrawingScript;
 import smallboxforfansub.scripting.ScriptPlugin;
 
@@ -941,6 +942,25 @@ public class DrawingPanel extends javax.swing.JPanel {
         xdw.createDrawing(path);
     }
     
+    public void saveSVGFile(String path){
+        VectorObject vo = new VectorObject();
+        
+        for(Object o : dlm.toArray()){
+            if(o instanceof Layer){
+                Layer lay = (Layer)o;
+                LayerContent lc = new LayerContent();
+                lc.setName(lay.getName());
+                lc.setColor(lay.getColor());
+                lc.setAssCommands(updateCommands(lay));
+                vo.addLayer(lc);       
+            }
+        }
+        
+        XmlVectorWriter xvw = new XmlVectorWriter();
+        xvw.setVectorObject(vo);
+        xvw.createVectorObject(path);
+    }
+    
     public String[] getAssCommandsOfFile(String path){
         try{
             XmlDrawingHandler xdh = new XmlDrawingHandler(path);
@@ -1138,8 +1158,11 @@ public class DrawingPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc=" Communication avec l'extérieur ">
     
     public static String updateCommands(){
+        return updateCommands(getCurrentLayer());
+    }
+    
+    public static String updateCommands(Layer lay){
         String commands = "";
-        Layer lay = getCurrentLayer();
         try{
             for(IShape s : lay.getShapesList().getShapes()){
                 if(s instanceof Line){
@@ -1240,7 +1263,7 @@ public class DrawingPanel extends javax.swing.JPanel {
      * Renvoir toutes les couches portant la notion Ln. par rapport à la couche
      * en cours. */
     public List<Layer> getLinkedLayers(){
-        List<Layer> layers = new ArrayList<Layer>();
+        List<Layer> layers = new ArrayList<>();
         Layer real_lay = getCurrentLayer();
         try{
             int groupNumber = Integer.parseInt(real_lay.getName()
@@ -1290,7 +1313,7 @@ public class DrawingPanel extends javax.swing.JPanel {
         lay.setColor(c);
         dlm.addElement(lay);
         lstLayer.setSelectedValue(lay, true);
-        java.util.List<Layer> listlay = new ArrayList<Layer>();
+        java.util.List<Layer> listlay = new ArrayList<>();
         for(Object o : dlm.toArray()){
             if( o instanceof Layer){
                 Layer layer = (Layer)o;
@@ -1308,6 +1331,81 @@ public class DrawingPanel extends javax.swing.JPanel {
     
     public static void updateLayerList(){
         lstLayer.updateUI();
+    }
+    
+    public static String getSVGCommands(){
+        String commands = "";
+        Layer lay = getCurrentLayer();
+        try{
+            for(IShape s : lay.getShapesList().getShapes()){
+                if(s instanceof Line){
+                    Line line = (Line)s;
+                    int x = (int)line.getLastPoint().getX();
+                    int y = (int)line.getLastPoint().getY();
+                    int xb = x-(sh.getWidth()/scale)/2;
+                    int yb = y-(sh.getHeight()/scale)/2;
+                    commands = commands + "L "+xb+","+yb+" ";
+                }else if(s instanceof Bezier){
+                    Bezier bezier = (Bezier)s;
+                    int x1 = (int)bezier.getControl1().getOriginPoint().getX();
+                    int y1 = (int)bezier.getControl1().getOriginPoint().getY();
+                    int x2 = (int)bezier.getControl2().getOriginPoint().getX();
+                    int y2 = (int)bezier.getControl2().getOriginPoint().getY();
+                    int x3 = (int)bezier.getLastPoint().getX();
+                    int y3 = (int)bezier.getLastPoint().getY();
+                    int xe = x1-(sh.getWidth()/scale)/2;
+                    int ye = y1-(sh.getHeight()/scale)/2;
+                    int xf = x2-(sh.getWidth()/scale)/2;
+                    int yf = y2-(sh.getHeight()/scale)/2;
+                    int xg = x3-(sh.getWidth()/scale)/2;
+                    int yg = y3-(sh.getHeight()/scale)/2;
+                    commands = commands + "C "+xe+","+ye+" "+xf+","+yf+" "+xg+","+yg+" ";
+                }else if(s instanceof BSpline){
+//                    BSpline bs = (BSpline)s;
+//                    List<ControlPoint> lcp = bs.getControlPoints();
+//                    int lastcp = lcp.size()-1;
+//                    commands = commands + "s ";
+//                    for(ControlPoint cp : lcp){
+//                        int x = (int)cp.getOriginPoint().getX();
+//                        int y = (int)cp.getOriginPoint().getY();
+//                        int xi = x-(sh.getWidth()/scale)/2;
+//                        int yi = y-(sh.getHeight()/scale)/2;
+//                        if(bs.isNextExist()==true && cp.equals(lcp.get(lastcp))==true){
+//                            //rien
+//                        }else{
+//                            commands = commands + xi+" "+yi+" ";
+//                        }
+//                    }
+//                    if(bs.isClosed()==true){
+//                        commands = commands + "c ";
+//                    }
+//                    if(bs.isNextExist()==true){
+//                        int x = (int)bs.getNextPoint().getX();
+//                        int y = (int)bs.getNextPoint().getY();
+//                        int xi = x-(sh.getWidth()/scale)/2;
+//                        int yi = y-(sh.getHeight()/scale)/2;
+//                        commands = commands + "p "+xi+" "+yi+" ";
+//                    }
+                }else if(s instanceof Move){
+                    Move move = (Move)s;
+                    int x = (int)move.getLastPoint().getX();
+                    int y = (int)move.getLastPoint().getY();
+                    int xb = x-(sh.getWidth()/scale)/2;
+                    int yb = y-(sh.getHeight()/scale)/2;
+                    commands = commands + "M "+xb+","+yb+" ";
+                }else if(s instanceof ReStart){
+                    ReStart move = (ReStart)s;
+                    int x = (int)move.getLastPoint().getX();
+                    int y = (int)move.getLastPoint().getY();
+                    int xb = x-(sh.getWidth()/scale)/2;
+                    int yb = y-(sh.getHeight()/scale)/2;
+                    commands = commands + "M "+xb+","+yb+" ";
+                }
+            }
+            return commands;
+        }catch(Exception exc){
+            return null;
+        }        
     }
     
     // </editor-fold>
@@ -2254,6 +2352,7 @@ public class DrawingPanel extends javax.swing.JPanel {
         tbReStart = new javax.swing.JToggleButton();
         tbMove = new javax.swing.JToggleButton();
         btnCloseBSpline = new javax.swing.JButton();
+        tbGrid = new javax.swing.JToggleButton();
         ifrImage = new javax.swing.JInternalFrame();
         btnUnloadImage = new javax.swing.JButton();
         btnImage = new javax.swing.JButton();
@@ -2814,6 +2913,16 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrMainDraw.getContentPane().add(btnCloseBSpline);
         btnCloseBSpline.setBounds(40, 40, 40, 40);
 
+        tbGrid.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/gridlocker.png"))); // NOI18N
+        tbGrid.setToolTipText("Se déplacer sur la grille");
+        tbGrid.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbGridActionPerformed(evt);
+            }
+        });
+        ifrMainDraw.getContentPane().add(tbGrid);
+        tbGrid.setBounds(120, 80, 40, 40);
+
         ifrMainDraw.setBounds(10, 90, 180, 150);
         jDesktopPane1.add(ifrMainDraw, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
@@ -3342,10 +3451,17 @@ public class DrawingPanel extends javax.swing.JPanel {
 
     private void spSheetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spSheetMouseClicked
         // QUAND ON CLIC SUR UN BOUTON DE LA SOURIS
-    if(tbShapeBezier.isSelected() | tbShapeLine.isSelected()){
-       // On récupère les coordonnées sur le composant sheet.
         int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
         int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+        if(tbGrid.isSelected()){
+            java.awt.Point pa = Sheet.getGridCoordinates(xa, ya);
+            xa = pa.x;
+            ya = pa.y;
+        }
+    if(tbShapeBezier.isSelected() | tbShapeLine.isSelected()){
+       // On récupère les coordonnées sur le composant sheet.
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();        
         Layer lay = getCurrentLayer();
 
         // Si on clique sur le bouton 1 de la souris (le bouton gauche).
@@ -3434,8 +3550,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         } 
     }else if(tbShapeBSpline1.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         Layer lay = getCurrentLayer();
         
         // Si on clique sur le bouton 1 de la souris (le bouton gauche).
@@ -3512,8 +3628,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         updateRemember(lay);
     }else if(tbNextPoint.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         Layer lay = getCurrentLayer();
         
         // Si on clique sur le bouton 1 de la souris (le bouton gauche).
@@ -3538,8 +3654,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         tfAssCommands.setText(updateCommands());
     }else if(tbMove.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         Layer lay = getCurrentLayer();
         
         // Si on clique sur le bouton 1 de la souris (le bouton gauche).
@@ -3581,8 +3697,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         updateRemember(lay);
     }else if(tbReStart.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         Layer lay = getCurrentLayer();
         
         // Si on clique sur le bouton 1 de la souris (le bouton gauche).
@@ -3626,8 +3742,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         if(tbNormalMode.isSelected()){
             Layer lay = getCurrentLayer();
             if(evt.getButton()==1 && lay.getTranslation().isSet()==false){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getTranslation().setTranslation(new java.awt.Point(xa, ya));
                 sh.updateTranslation(lay.getTranslation());
             }
@@ -3635,8 +3751,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay : layers){
                 if(evt.getButton()==1 && lay.getTranslation().isSet()==false){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay.getTranslation().setTranslation(new java.awt.Point(xa, ya));
                     sh.updateTranslation(lay.getTranslation());
                 }
@@ -3646,8 +3762,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         if(tbNormalMode.isSelected()){
             Layer lay = getCurrentLayer();
             if(evt.getButton()==1 && lay.getCenter().isSet()==false){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getCenter().setCenter(xa, ya);
                 sh.updateCenter(lay.getCenter());
             }
@@ -3669,8 +3785,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay : layers){
                 if(evt.getButton()==1 && lay.getCenter().isSet()==false){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay.getCenter().setCenter(xa, ya);
                     sh.updateCenter(lay.getCenter());
                 }
@@ -3682,8 +3798,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         if(tbNormalMode.isSelected()){
             Layer lay = getCurrentLayer();
             if(evt.getButton()==1 && lay.getResize().isSet()==false){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getResize().setResize(xa, ya);
                 sh.updateResize(lay.getResize());
             }
@@ -3691,8 +3807,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay : layers){
                 if(evt.getButton()==1 && lay.getResize().isSet()==false){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay.getResize().setResize(xa, ya);
                     sh.updateResize(lay.getResize());
                 }
@@ -3702,8 +3818,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         if(tbNormalMode.isSelected()){
             Layer lay = getCurrentLayer();
             if(evt.getButton()==1 && lay.getShear().isSet()==false){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getShear().setup(getCurrentLayer().getShapesList().getShapes());
                 lay.getShear().setShearPoint(xa, ya);
                 sh.updateShear(lay.getShear());
@@ -3712,8 +3828,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay : layers){
                 if(evt.getButton()==1 && lay.getShear().isSet()==false){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay.getShear().setup(getCurrentLayer().getShapesList().getShapes());
                     lay.getShear().setShearPoint(xa, ya);
                     sh.updateShear(lay.getShear());
@@ -3722,8 +3838,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
         
     }else if(tbOrnMMLine.isSelected()){
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         if(evt.getButton()==1){//VOIR PLUS HAUT LE FONCTIONNEMENT - Même chose que Line
             if (ornlayForMain.getFirstPoint()==null){
                 ornlayForMain.setFirstPoint(new java.awt.Point(xa/scale,ya/scale));                
@@ -3753,8 +3869,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             ornlayForMain.setFirstPoint(ornlayForMain.getLastPoint());
         }
     }else if(tbOrnMMBezier.isSelected()){
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         if(evt.getButton()==1){//VOIR PLUS HAUT LE FONCTIONNEMENT - Même chose que Line
             if (ornlayForMain.getFirstPoint()==null){
                 ornlayForMain.setFirstPoint(new java.awt.Point(xa/scale,ya/scale));                
@@ -3805,6 +3921,13 @@ public class DrawingPanel extends javax.swing.JPanel {
 
     private void spSheetMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spSheetMousePressed
         // QUAND ON APPUIE SUR UN BOUTON DE LA SOURIS
+        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+        if(tbGrid.isSelected()){
+            java.awt.Point pa = Sheet.getGridCoordinates(xa, ya);
+            xa = pa.x;
+            ya = pa.y;
+        }
     if(tbShapeBezier.isSelected() | tbShapeLine.isSelected()
             | tbMove.isSelected() | tbReStart.isSelected()){
         //Prépare la mise à jour de la position des points proches du pointeur
@@ -3812,8 +3935,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         //on marque chaque élément concerné par un déplacment
         if(evt.getButton()==2){
             Layer lay = getCurrentLayer();
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
             lay.setChangelist(lay.getShapesList().getShapesAtPoint(p2d));
             for (IShape s : lay.getShapesList().getShapes()){
@@ -3828,8 +3951,8 @@ public class DrawingPanel extends javax.swing.JPanel {
     }else if (tbShapeBSpline1.isSelected() | tbNextPoint.isSelected()){
         if(evt.getButton()==2){
             Layer lay = getCurrentLayer();
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
             lay.setChangelist(lay.getShapesList().getShapesAtPoint(p2d));
             for (IShape s : lay.getShapesList().getShapes()){
@@ -3851,8 +3974,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getTranslation().isSet()){
             if(evt.getButton()==1){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getTranslation().setDistance(xa, ya);
                 lay.getTranslation().setTranslatonPreview(getCurrentLayer().getShapesList().getShapes());
                 sh.updateTranslation(lay.getTranslation());
@@ -3861,8 +3984,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay2 : layers){
                 if(evt.getButton()==1){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay2.getTranslation().setDistance(xa, ya);
                     lay2.getTranslation().setTranslatonPreview(lay2.getShapesList().getShapes());
                     sh.updateTranslation(lay2.getTranslation());
@@ -3873,16 +3996,16 @@ public class DrawingPanel extends javax.swing.JPanel {
         
     }else if(tbSelection.isSelected() && evt.getButton()==1){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         selection.setStartPoint(xa, ya);
         selection.setEndPoint(xa, ya);
         sh.updateSelection(selection, false);
         sh.updateDrawing();
     }else if(tbSelection.isSelected() && evt.getButton()==2){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         selection.setPointToAdd(new java.awt.Point(xa, ya));
         sh.updateSelection(selection, false);
         sh.updateDrawing();
@@ -3890,8 +4013,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getCenter().isSet()){
             if(evt.getButton()==1){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getCenter().setRotation(xa, ya);
                 lay.getCenter().setRotationPreview(getCurrentLayer().getShapesList().getShapes(), 0d);
                 sh.updateCenter(lay.getCenter());
@@ -3900,8 +4023,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay2 : layers){
                 if(evt.getButton()==1){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay2.getCenter().setRotation(xa, ya);
                     lay2.getCenter().setRotationPreview(lay2.getShapesList().getShapes(), 0d);
                     sh.updateCenter(lay2.getCenter());
@@ -3912,8 +4035,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getResize().isSet()){
             if(evt.getButton()==1){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getResize().setDistance(xa, ya);
                 lay.getResize().setResizePreview(getCurrentLayer().getShapesList().getShapes(), 0d);
                 sh.updateResize(lay.getResize());
@@ -3922,8 +4045,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay2 : layers){
                 if(evt.getButton()==1){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay2.getResize().setDistance(xa, ya);
                     lay2.getResize().setResizePreview(lay2.getShapesList().getShapes(), 0d);
                     sh.updateResize(lay2.getResize());
@@ -3934,8 +4057,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getShear().isSet()){
             if(evt.getButton()==1){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay.getShear().setMovePoint(xa, ya);
                 lay.getShear().setShearPreview(getCurrentLayer().getShapesList().getShapes());
                 sh.updateShear(lay.getShear());
@@ -3944,8 +4067,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             for(Layer lay2 : layers){
                 if(evt.getButton()==1){
-                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                    int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                    int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                     lay2.getShear().setMovePoint(xa, ya);
                     lay2.getShear().setShearPreview(lay2.getShapesList().getShapes());
                     sh.updateShear(lay2.getShear());
@@ -3954,8 +4077,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         }        
     }else if(tbOrnMMLine.isSelected() | tbOrnMMBezier.isSelected()){
         if(evt.getButton()==2){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
             ornlayForMain.setChangeList(ornlayForMain.getShapesAtPoint(p2d));
             for (smallboxforfansub.drawing.ornament.IShape s : ornlayForMain.getList()){
@@ -3972,14 +4095,21 @@ public class DrawingPanel extends javax.swing.JPanel {
 
     private void spSheetMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spSheetMouseReleased
         // QUAND ON RELACHE UN BOUTON DE LA SOURIS
+        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+        if(tbGrid.isSelected()){
+            java.awt.Point pa = Sheet.getGridCoordinates(xa, ya);
+            xa = pa.x;
+            ya = pa.y;
+        }
     if(tbShapeBezier.isSelected() | tbShapeLine.isSelected()
             | tbShapeBSpline1.isSelected() | tbNextPoint.isSelected()
             | tbMove.isSelected() | tbReStart.isSelected()){
         //Met à jour la position des points et des lignes/courbes.
         Layer lay = getCurrentLayer();
         if(evt.getButton()==2 && lay.getChangelist()!=null){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
             for (IShape s : lay.getShapesList().getShapes()){
                 if(s.getMarked()==true){
@@ -4049,8 +4179,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
     }else if(tbSelection.isSelected() && evt.getButton()==1){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         selection.setEndPoint(xa, ya);
         Layer lay = getCurrentLayer();
         selection.searchForShapes(lay.getShapesList());
@@ -4119,8 +4249,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
     }else if(tbOrnMMLine.isSelected() | tbOrnMMBezier.isSelected()){
         if(evt.getButton()==2 && ornlayForMain.getChangeList()!=null){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
             for (smallboxforfansub.drawing.ornament.IShape s : ornlayForMain.getList()) {
                 if(s.getMarked()==true){
@@ -4155,6 +4285,13 @@ public class DrawingPanel extends javax.swing.JPanel {
 
     private void spSheetMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spSheetMouseDragged
         // QUAND ON DEPLACE LA SOURIS AVEC UN BOUTON ENFONCE (LE BOUTON GAUCHE)
+        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+        if(tbGrid.isSelected()){
+            java.awt.Point pa = Sheet.getGridCoordinates(xa, ya);
+            xa = pa.x;
+            ya = pa.y;
+        }
     if(tbShapeBezier.isSelected() | tbShapeLine.isSelected() 
             | tbMove.isSelected() | tbReStart.isSelected()
             | tbShapeBSpline1.isSelected() | tbNextPoint.isSelected()){
@@ -4162,8 +4299,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         Layer lay = getCurrentLayer();
         if(lay.getChangelist()!=null){
             // On récupère les coordonnées sur le composant sheet.
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
 
             //cette méthode ne sert plus à rien, car on ne veut pas n'importe quelle Shape
@@ -4242,8 +4379,8 @@ public class DrawingPanel extends javax.swing.JPanel {
 //        tfAssCommands.setText(updateCommands());
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getTranslation().isSet()){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             lay.getTranslation().setDistance(xa, ya);
             lay.getTranslation().setTranslatonPreview(lay.getShapesList().getShapes());
             sh.updateTranslation(lay.getTranslation());
@@ -4251,8 +4388,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             List<Translation> translations = new ArrayList<Translation>();
             for(Layer lay2 : layers){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay2.getTranslation().setDistance(xa, ya);
                 lay2.getTranslation().setTranslatonPreview(lay2.getShapesList().getShapes());
 //                sh.updateCenter(lay2.getCenter());
@@ -4262,16 +4399,16 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
     }else if(tbFreeDrawing.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         graDraft.fillOval((xa/scale)-(penSizeUnit/2), (ya/scale)-(penSizeUnit/2), penSizeUnit, penSizeUnit);
         graDraft.setColor(penColor);
         sh.updateDraft(imgDraft);
         sh.updateDrawing();
     }else if(tbFreeClear.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         Composite originalComposite = graDraft.getComposite();
         AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
         graDraft.setComposite(composite);
@@ -4282,16 +4419,16 @@ public class DrawingPanel extends javax.swing.JPanel {
         sh.updateDrawing();
     }else if(tbSelection.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         selection.setEndPoint(xa, ya);
         sh.updateSelection(selection, false);
         sh.updateDrawing();
     }else if(tbRotation.isSelected()){
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getCenter().isSet()){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             lay.getCenter().setRotation(xa, ya);
             lay.getCenter().setRotationPreview(lay.getShapesList().getShapes(), 0d);
             sh.updateCenter(lay.getCenter());
@@ -4299,8 +4436,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             List<Center> centers = new ArrayList<Center>();
             for(Layer lay2 : layers){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay2.getCenter().setRotation(xa, ya);
                 lay2.getCenter().setRotationPreview(lay2.getShapesList().getShapes(), 0d);
 //                sh.updateCenter(lay2.getCenter());
@@ -4311,8 +4448,8 @@ public class DrawingPanel extends javax.swing.JPanel {
     }else if(tbResize.isSelected()){
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getResize().isSet()){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             lay.getResize().setDistance(xa, ya);
             lay.getResize().setResizePreview(lay.getShapesList().getShapes(), 0d);
             sh.updateResize(lay.getResize());
@@ -4320,8 +4457,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             List<Resize> resizes = new ArrayList<Resize>();
             for(Layer lay2 : layers){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay2.getResize().setDistance(xa, ya);
                 lay2.getResize().setResizePreview(lay2.getShapesList().getShapes(), 0d);
 //                sh.updateResize(lay2.getResize());
@@ -4332,8 +4469,8 @@ public class DrawingPanel extends javax.swing.JPanel {
     }else if(tbShear.isSelected()){
         Layer lay = getCurrentLayer();
         if(tbNormalMode.isSelected() && lay.getShear().isSet()){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             lay.getShear().setShearPoint(xa, ya);
             lay.getShear().setShearPreview(lay.getShapesList().getShapes());
             sh.updateShear(lay.getShear());
@@ -4341,8 +4478,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             List<Layer> layers = getLinkedLayers();
             List<Shear> shears = new ArrayList<Shear>();
             for(Layer lay2 : layers){
-                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//                int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//                int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
                 lay2.getShear().setShearPoint(xa, ya);
                 lay2.getShear().setShearPreview(lay2.getShapesList().getShapes());
 //                sh.updateShear(lay2.getShear());
@@ -4352,8 +4489,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
     }else if(tbOrnMMLine.isSelected() | tbOrnMMBezier.isSelected()){
         if(ornlayForMain.getChangeList()!=null){
-            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//            int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//            int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
             java.awt.Point p2d = new java.awt.Point(xa/scale,ya/scale);
             if(tbOrnMMLine.isSelected() | tbOrnMMBezier.isSelected()){
                 if(ornlayForMain.getLastPointOfShapes().getLastPoint()!=null){
@@ -4403,6 +4540,13 @@ public class DrawingPanel extends javax.swing.JPanel {
 
     private void spSheetMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spSheetMouseMoved
         // QUAND ON DEPLACE LA SOURIS
+        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+        if(tbGrid.isSelected()){
+            java.awt.Point pa = Sheet.getGridCoordinates(xa, ya);
+            xa = pa.x;
+            ya = pa.y;
+        }
     if(tbShapeBezier.isSelected() | tbShapeLine.isSelected()
             | tbFreeDrawing.isSelected() | tbFreeClear.isSelected()
             | tbShapeBSpline1.isSelected() | tbNextPoint.isSelected()
@@ -4412,8 +4556,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             | tbShear.isSelected() | tbOrnMMBSpline.isSelected()
             | tbOrnMMBezier.isSelected() | tbOrnMMLine.isSelected()){
         // On récupère les coordonnées sur le composant sheet.
-        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
-        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
+//        int xa = evt.getXOnScreen()-(int)sh.getLocationOnScreen().getX();
+//        int ya = evt.getYOnScreen()-(int)sh.getLocationOnScreen().getY();
         //on met à jour les coordonnées dans cette méthode afin de voir les traits
         //vertical et horizontal lorsqu'on bouge la souris
         sh.updateMousePosition(xa/scale, ya/scale);
@@ -4511,10 +4655,17 @@ public class DrawingPanel extends javax.swing.JPanel {
     }
     fcZDrawing.setAccessory(null);
     fcZDrawing.addChoosableFileFilter(new DrawingFilter());
+    fcZDrawing.addChoosableFileFilter(new SVGFilter());    
     int z = fcZDrawing.showSaveDialog(this);
     if (z == JFileChooser.APPROVE_OPTION){
         String path = fcZDrawing.getSelectedFile().getAbsolutePath();
-        if(path.endsWith(".adf")==false){path = path + ".adf";}
+        if(fcZDrawing.getFileFilter() instanceof DrawingFilter){
+            if(path.endsWith(".adf")==false){path = path + ".adf";}
+            saveDrawingFile2(path);// Méthode 2
+        }else if(fcZDrawing.getFileFilter() instanceof SVGFilter){
+            if(path.endsWith(".svg")==false){path = path + ".svg";}
+            saveSVGFile(path);
+        }        
         // Méthode 1 :
 //        saveDrawingFile(path);
 //        String pathJPG = path.replace(".adf", ".jpg");
@@ -4525,8 +4676,6 @@ public class DrawingPanel extends javax.swing.JPanel {
 //        } catch (IOException ex) {
 ////            ex.printStackTrace();
 //        }
-        // Méthode 2 :
-        saveDrawingFile2(path);
     }
     }//GEN-LAST:event_btnSaveActionPerformed
 
@@ -5481,6 +5630,14 @@ public class DrawingPanel extends javax.swing.JPanel {
         shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
     }//GEN-LAST:event_popmRemovePointsCurveActionPerformed
 
+    private void tbGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbGridActionPerformed
+        if(tbGrid.isSelected()){
+            sh.updateGrid(true);
+        }else{
+            sh.updateGrid(false);
+        }
+    }//GEN-LAST:event_tbGridActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgDraw;
     private javax.swing.ButtonGroup bgImageMove;
@@ -5602,6 +5759,7 @@ public class DrawingPanel extends javax.swing.JPanel {
     private javax.swing.JSpinner spiOrnMMFreq;
     private javax.swing.JToggleButton tbFreeClear;
     private javax.swing.JToggleButton tbFreeDrawing;
+    private javax.swing.JToggleButton tbGrid;
     private javax.swing.JToggleButton tbMove;
     private javax.swing.JToggleButton tbNextPoint;
     private javax.swing.JToggleButton tbNormalMode;
