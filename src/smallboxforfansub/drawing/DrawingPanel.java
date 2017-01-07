@@ -4,6 +4,7 @@
  */
 package smallboxforfansub.drawing;
 
+import drawing.BooleanOp;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -2326,6 +2327,11 @@ public class DrawingPanel extends javax.swing.JPanel {
         popmAddPointsBCL = new javax.swing.JMenuItem();
         popmRemovePointsLine = new javax.swing.JMenuItem();
         popmRemovePointsCurve = new javax.swing.JMenuItem();
+        jSeparator8 = new javax.swing.JPopupMenu.Separator();
+        popmBoolOpUnion = new javax.swing.JMenuItem();
+        popmBoolOpSubstract = new javax.swing.JMenuItem();
+        popmBoolOpIntersect = new javax.swing.JMenuItem();
+        popmBoolOpExcluOR = new javax.swing.JMenuItem();
         popRubberSize = new javax.swing.JPopupMenu();
         popmRubberSize2 = new javax.swing.JRadioButtonMenuItem();
         popmRubberSize4 = new javax.swing.JRadioButtonMenuItem();
@@ -2758,6 +2764,43 @@ public class DrawingPanel extends javax.swing.JPanel {
             }
         });
         popDrawing.add(popmRemovePointsCurve);
+        popDrawing.add(jSeparator8);
+
+        popmBoolOpUnion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 union.png"))); // NOI18N
+        popmBoolOpUnion.setText("Make union");
+        popmBoolOpUnion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmBoolOpUnionActionPerformed(evt);
+            }
+        });
+        popDrawing.add(popmBoolOpUnion);
+
+        popmBoolOpSubstract.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 substract.png"))); // NOI18N
+        popmBoolOpSubstract.setText("Make substract");
+        popmBoolOpSubstract.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmBoolOpSubstractActionPerformed(evt);
+            }
+        });
+        popDrawing.add(popmBoolOpSubstract);
+
+        popmBoolOpIntersect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 intersect.png"))); // NOI18N
+        popmBoolOpIntersect.setText("Make intersect");
+        popmBoolOpIntersect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmBoolOpIntersectActionPerformed(evt);
+            }
+        });
+        popDrawing.add(popmBoolOpIntersect);
+
+        popmBoolOpExcluOR.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 XOR.png"))); // NOI18N
+        popmBoolOpExcluOR.setText("Make XOR");
+        popmBoolOpExcluOR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmBoolOpExcluORActionPerformed(evt);
+            }
+        });
+        popDrawing.add(popmBoolOpExcluOR);
 
         bgRubberSize.add(popmRubberSize2);
         popmRubberSize2.setText("Taille de la gomme : 02 px");
@@ -2853,8 +2896,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrOpenSave.getContentPane().add(btnOpenFonts);
         btnOpenFonts.setBounds(120, 0, 40, 40);
 
+        jDesktopPane1.add(ifrOpenSave);
         ifrOpenSave.setBounds(10, 10, 180, 70);
-        jDesktopPane1.add(ifrOpenSave, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrMainDraw.setIconifiable(true);
         ifrMainDraw.setTitle("Pour dessiner");
@@ -2923,8 +2966,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrMainDraw.getContentPane().add(tbGrid);
         tbGrid.setBounds(120, 80, 40, 40);
 
+        jDesktopPane1.add(ifrMainDraw);
         ifrMainDraw.setBounds(10, 90, 180, 150);
-        jDesktopPane1.add(ifrMainDraw, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrImage.setIconifiable(true);
         ifrImage.setTitle("Image");
@@ -3012,8 +3055,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrImage.getContentPane().add(lblImageAlpha);
         lblImageAlpha.setBounds(0, 100, 80, 20);
 
+        jDesktopPane1.add(ifrImage);
         ifrImage.setBounds(10, 250, 180, 150);
-        jDesktopPane1.add(ifrImage, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrShape.setIconifiable(true);
         ifrShape.setTitle("Forme et échelle");
@@ -3050,8 +3093,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrShape.getContentPane().add(lblScale);
         lblScale.setBounds(80, 20, 80, 20);
 
+        jDesktopPane1.add(ifrShape);
         ifrShape.setBounds(10, 410, 180, 70);
-        jDesktopPane1.add(ifrShape, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrMode.setIconifiable(true);
         ifrMode.setTitle("Mode");
@@ -3069,8 +3112,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrMode.getContentPane().add(tbOrnamentMode);
         tbOrnamentMode.setBounds(40, 0, 40, 40);
 
+        jDesktopPane1.add(ifrMode);
         ifrMode.setBounds(10, 780, 180, 70);
-        jDesktopPane1.add(ifrMode, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrOperations.setIconifiable(true);
         ifrOperations.setTitle("Opérations");
@@ -3103,8 +3146,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrOperations.getContentPane().add(tbSelection);
         tbSelection.setBounds(0, 40, 40, 40);
 
+        jDesktopPane1.add(ifrOperations);
         ifrOperations.setBounds(10, 490, 180, 110);
-        jDesktopPane1.add(ifrOperations, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrScript.setIconifiable(true);
         ifrScript.setResizable(true);
@@ -3144,8 +3187,8 @@ public class DrawingPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE))
         );
 
+        jDesktopPane1.add(ifrScript);
         ifrScript.setBounds(10, 610, 180, 160);
-        jDesktopPane1.add(ifrScript, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrHistoric.setIconifiable(true);
         ifrHistoric.setResizable(true);
@@ -3196,8 +3239,8 @@ public class DrawingPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
         );
 
+        jDesktopPane1.add(ifrHistoric);
         ifrHistoric.setBounds(390, 90, 180, 600);
-        jDesktopPane1.add(ifrHistoric, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrLayers.setIconifiable(true);
         ifrLayers.setResizable(true);
@@ -3254,8 +3297,8 @@ public class DrawingPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
         );
 
+        jDesktopPane1.add(ifrLayers);
         ifrLayers.setBounds(200, 410, 180, 150);
-        jDesktopPane1.add(ifrLayers, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrDrawing.setIconifiable(true);
         ifrDrawing.setMaximizable(true);
@@ -3297,8 +3340,8 @@ public class DrawingPanel extends javax.swing.JPanel {
             .addComponent(spSheet, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
         );
 
+        jDesktopPane1.add(ifrDrawing);
         ifrDrawing.setBounds(200, 90, 180, 310);
-        jDesktopPane1.add(ifrDrawing, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrOrnament.setIconifiable(true);
         ifrOrnament.setTitle("Ornement");
@@ -3407,8 +3450,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         ifrOrnament.getContentPane().add(btnOrnMMClear);
         btnOrnMMClear.setBounds(120, 90, 40, 40);
 
+        jDesktopPane1.add(ifrOrnament);
         ifrOrnament.setBounds(200, 570, 180, 240);
-        jDesktopPane1.add(ifrOrnament, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         ifrAssCommands.setIconifiable(true);
         ifrAssCommands.setResizable(true);
@@ -3443,8 +3486,8 @@ public class DrawingPanel extends javax.swing.JPanel {
                 .addComponent(tfAssCommands, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        jDesktopPane1.add(ifrAssCommands);
         ifrAssCommands.setBounds(200, 10, 670, 70);
-        jDesktopPane1.add(ifrAssCommands, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         add(jDesktopPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -5638,6 +5681,102 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tbGridActionPerformed
 
+    private void popmBoolOpUnionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmBoolOpUnionActionPerformed
+        int[] indices = lstLayer.getSelectedIndices();
+        if(indices.length >= 2){
+            //On fait autant d'opérations booléennes que demandées
+            java.awt.Shape one = ((Layer)dlm.toArray()[indices[0]]).getGeneralPath();
+            for(int i=1; i<indices.length; i++){
+                java.awt.Shape two = ((Layer)dlm.toArray()[indices[i]]).getGeneralPath();
+                one = BooleanOp.getUnion(one, two);
+            }
+            //On crée un nouveau calque contenant notre résultat booléen.
+            Layer lay = new Layer();
+            lay.fromShape(one);
+            //On efface tous les calques qui ont servi.
+            for(int i=indices[indices.length-1]; i >=0; i--){
+                dlm.remove(indices[i]);
+            }
+            //On ajoute notre calque résultant
+            dlm.addElement(lay);
+        }
+    }//GEN-LAST:event_popmBoolOpUnionActionPerformed
+
+    private void popmBoolOpSubstractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmBoolOpSubstractActionPerformed
+        int[] indices = lstLayer.getSelectedIndices();
+        if(indices.length >= 2){
+            //On fait autant d'opérations booléennes que demandées
+            java.awt.Shape one = ((Layer)dlm.toArray()[indices[0]]).getGeneralPath();
+            for(int i=1; i<indices.length; i++){
+                java.awt.Shape two = ((Layer)dlm.toArray()[indices[i]]).getGeneralPath();
+                one = BooleanOp.getSubstract(one, two);
+            }
+            //On crée un nouveau calque contenant notre résultat booléen.
+            Layer lay = new Layer();
+            lay.fromShape(one);
+            
+            
+            
+            //On efface tous les calques qui ont servi.
+            for(int i=indices[indices.length-1]; i >=0; i--){
+                dlm.remove(indices[i]);
+            }
+            //On ajoute notre calque résultant
+            dlm.addElement(lay);
+            
+            //On sélectionne le calque (pour éviter que getCurrentLayer() soit null)
+            lstLayer.setSelectedIndex(0);
+            
+            sh.updateGeneralPath(lay.getGeneralPath());
+            sh.updateShapesList(lay.getShapesList());
+            
+            tfAssCommands.setText(updateCommands());
+        shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
+        }
+    }//GEN-LAST:event_popmBoolOpSubstractActionPerformed
+
+    private void popmBoolOpIntersectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmBoolOpIntersectActionPerformed
+        int[] indices = lstLayer.getSelectedIndices();
+        if(indices.length >= 2){
+            //On fait autant d'opérations booléennes que demandées
+            java.awt.Shape one = ((Layer)dlm.toArray()[indices[0]]).getGeneralPath();
+            for(int i=1; i<indices.length; i++){
+                java.awt.Shape two = ((Layer)dlm.toArray()[indices[i]]).getGeneralPath();
+                one = BooleanOp.getIntersect(one, two);
+            }
+            //On crée un nouveau calque contenant notre résultat booléen.
+            Layer lay = new Layer();
+            lay.fromShape(one);
+            //On efface tous les calques qui ont servi.
+            for(int i=indices[indices.length-1]; i >=0; i--){
+                dlm.remove(indices[i]);
+            }
+            //On ajoute notre calque résultant
+            dlm.addElement(lay);
+        }
+    }//GEN-LAST:event_popmBoolOpIntersectActionPerformed
+
+    private void popmBoolOpExcluORActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmBoolOpExcluORActionPerformed
+        int[] indices = lstLayer.getSelectedIndices();
+        if(indices.length >= 2){
+            //On fait autant d'opérations booléennes que demandées
+            java.awt.Shape one = ((Layer)dlm.toArray()[indices[0]]).getGeneralPath();
+            for(int i=1; i<indices.length; i++){
+                java.awt.Shape two = ((Layer)dlm.toArray()[indices[i]]).getGeneralPath();
+                one = BooleanOp.getXOR(one, two);
+            }
+            //On crée un nouveau calque contenant notre résultat booléen.
+            Layer lay = new Layer();
+            lay.fromShape(one);
+            //On efface tous les calques qui ont servi.
+            for(int i=indices[indices.length-1]; i >=0; i--){
+                dlm.remove(indices[i]);
+            }
+            //On ajoute notre calque résultant
+            dlm.addElement(lay);
+        }
+    }//GEN-LAST:event_popmBoolOpExcluORActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgDraw;
     private javax.swing.ButtonGroup bgImageMove;
@@ -5691,6 +5830,7 @@ public class DrawingPanel extends javax.swing.JPanel {
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JLabel lblAssCommands;
     private javax.swing.JLabel lblCoordinates;
     private javax.swing.JLabel lblDrawingAlpha;
@@ -5712,6 +5852,10 @@ public class DrawingPanel extends javax.swing.JPanel {
     private javax.swing.JMenuItem popmAddPointsBCL;
     private javax.swing.JMenuItem popmAddPointsBL;
     private javax.swing.JMenuItem popmAddPointsBLC;
+    private javax.swing.JMenuItem popmBoolOpExcluOR;
+    private javax.swing.JMenuItem popmBoolOpIntersect;
+    private javax.swing.JMenuItem popmBoolOpSubstract;
+    private javax.swing.JMenuItem popmBoolOpUnion;
     private javax.swing.JMenuItem popmClearSketch;
     private javax.swing.JMenuItem popmColor;
     private javax.swing.JMenuItem popmCopy;
