@@ -492,6 +492,7 @@
               <Image iconType="3" name="/smallboxforfansub/images/20 union.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Make union"/>
+            <Property name="toolTipText" type="java.lang.String" value="Select 2 layers at least to make union."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popmBoolOpUnionActionPerformed"/>
@@ -503,6 +504,7 @@
               <Image iconType="3" name="/smallboxforfansub/images/20 substract.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Make substract"/>
+            <Property name="toolTipText" type="java.lang.String" value="Select 2 layers at least to make substract."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popmBoolOpSubstractActionPerformed"/>
@@ -514,6 +516,7 @@
               <Image iconType="3" name="/smallboxforfansub/images/20 intersect.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Make intersect"/>
+            <Property name="toolTipText" type="java.lang.String" value="Select 2 layers at least to make intersect."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popmBoolOpIntersectActionPerformed"/>
@@ -525,6 +528,7 @@
               <Image iconType="3" name="/smallboxforfansub/images/20 XOR.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Make XOR"/>
+            <Property name="toolTipText" type="java.lang.String" value="Select 2 layers at least to make XOR."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="popmBoolOpExcluORActionPerformed"/>

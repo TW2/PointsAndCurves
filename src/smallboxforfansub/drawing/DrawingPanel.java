@@ -2768,6 +2768,7 @@ public class DrawingPanel extends javax.swing.JPanel {
 
         popmBoolOpUnion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 union.png"))); // NOI18N
         popmBoolOpUnion.setText("Make union");
+        popmBoolOpUnion.setToolTipText("Select 2 layers at least to make union.");
         popmBoolOpUnion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 popmBoolOpUnionActionPerformed(evt);
@@ -2777,6 +2778,7 @@ public class DrawingPanel extends javax.swing.JPanel {
 
         popmBoolOpSubstract.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 substract.png"))); // NOI18N
         popmBoolOpSubstract.setText("Make substract");
+        popmBoolOpSubstract.setToolTipText("Select 2 layers at least to make substract.");
         popmBoolOpSubstract.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 popmBoolOpSubstractActionPerformed(evt);
@@ -2786,6 +2788,7 @@ public class DrawingPanel extends javax.swing.JPanel {
 
         popmBoolOpIntersect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 intersect.png"))); // NOI18N
         popmBoolOpIntersect.setText("Make intersect");
+        popmBoolOpIntersect.setToolTipText("Select 2 layers at least to make intersect.");
         popmBoolOpIntersect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 popmBoolOpIntersectActionPerformed(evt);
@@ -2795,6 +2798,7 @@ public class DrawingPanel extends javax.swing.JPanel {
 
         popmBoolOpExcluOR.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smallboxforfansub/images/20 XOR.png"))); // NOI18N
         popmBoolOpExcluOR.setText("Make XOR");
+        popmBoolOpExcluOR.setToolTipText("Select 2 layers at least to make XOR.");
         popmBoolOpExcluOR.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 popmBoolOpExcluORActionPerformed(evt);
