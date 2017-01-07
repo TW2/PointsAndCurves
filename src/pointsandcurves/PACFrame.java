@@ -98,8 +98,8 @@ public class PACFrame extends javax.swing.JFrame {
         themecollection.setup();
         changeTheme(themecollection.getTheme(theme));
         
-        NewsFrame nf = new NewsFrame();
-        nf.setVisible(true);
+//        NewsFrame nf = new NewsFrame();
+//        nf.setVisible(true);
         SplashFrame sf = new SplashFrame();
         sf.setVisible(true);
         
