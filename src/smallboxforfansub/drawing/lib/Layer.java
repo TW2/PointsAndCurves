@@ -288,7 +288,7 @@ public class Layer {
                     slist.addShape(p4); addRemember(p4);
                     Bezier c = new Bezier();
                     c.setOriginPoint((int)lastX, (int)lastY);
-                    c.setLastPoint((int)coords[2], (int)coords[3]);
+                    c.setLastPoint((int)coords[4], (int)coords[5]);
                     c.setControl1Point((int)coords[0], (int)coords[1]);
                     c.setControl2Point((int)coords[2], (int)coords[3]);
                     slist.addShape(c); addRemember(c);                    
@@ -502,7 +502,7 @@ public class Layer {
                     slist.addShape(p4); addRemember(p4);
                     Bezier c = new Bezier();
                     c.setOriginPoint((int)lastX, (int)lastY);
-                    c.setLastPoint((int)coords[2], (int)coords[3]);
+                    c.setLastPoint((int)coords[4], (int)coords[5]);
                     c.setControl1Point((int)coords[0], (int)coords[1]);
                     c.setControl2Point((int)coords[2], (int)coords[3]);
                     slist.addShape(c); addRemember(c);                    

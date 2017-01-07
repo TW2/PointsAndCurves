@@ -5699,6 +5699,29 @@ public class DrawingPanel extends javax.swing.JPanel {
             }
             //On ajoute notre calque résultant
             dlm.addElement(lay);
+            
+            //On sélectionne le calque (pour éviter que getCurrentLayer() soit null)
+            //en cas où tous les calques ont été consommés.
+            lstLayer.setSelectedIndex(0);
+            
+            //On met à jour la liste des calques dans le composant de dessin
+            List<Layer> listlay = new ArrayList<>();
+            for(Object o : dlm.toArray()){
+                if(o instanceof Layer){
+                    Layer layer = (Layer)o;
+                    if(listlay.contains(layer)==false){
+                        listlay.add(layer);
+                    }
+                }
+            }
+            sh.setLayerList(listlay);
+            
+            //On met à jour le contrôle de dessin et on effectue des opérations de routine
+            sh.updateGeneralPath(lay.getGeneralPath());
+            sh.updateShapesList(lay.getShapesList());
+            lay.updateEndPoint();
+            tfAssCommands.setText(updateCommands());
+            shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
         }
     }//GEN-LAST:event_popmBoolOpUnionActionPerformed
 
@@ -5713,10 +5736,7 @@ public class DrawingPanel extends javax.swing.JPanel {
             }
             //On crée un nouveau calque contenant notre résultat booléen.
             Layer lay = new Layer();
-            lay.fromShape(one);
-            
-            
-            
+            lay.fromShape(one);            
             //On efface tous les calques qui ont servi.
             for(int i=indices[indices.length-1]; i >=0; i--){
                 dlm.remove(indices[i]);
@@ -5725,13 +5745,27 @@ public class DrawingPanel extends javax.swing.JPanel {
             dlm.addElement(lay);
             
             //On sélectionne le calque (pour éviter que getCurrentLayer() soit null)
+            //en cas où tous les calques ont été consommés.
             lstLayer.setSelectedIndex(0);
             
+            //On met à jour la liste des calques dans le composant de dessin
+            List<Layer> listlay = new ArrayList<>();
+            for(Object o : dlm.toArray()){
+                if(o instanceof Layer){
+                    Layer layer = (Layer)o;
+                    if(listlay.contains(layer)==false){
+                        listlay.add(layer);
+                    }
+                }
+            }
+            sh.setLayerList(listlay);
+            
+            //On met à jour le contrôle de dessin et on effectue des opérations de routine
             sh.updateGeneralPath(lay.getGeneralPath());
             sh.updateShapesList(lay.getShapesList());
-            
+            lay.updateEndPoint();
             tfAssCommands.setText(updateCommands());
-        shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
+            shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
         }
     }//GEN-LAST:event_popmBoolOpSubstractActionPerformed
 
@@ -5753,6 +5787,29 @@ public class DrawingPanel extends javax.swing.JPanel {
             }
             //On ajoute notre calque résultant
             dlm.addElement(lay);
+            
+            //On sélectionne le calque (pour éviter que getCurrentLayer() soit null)
+            //en cas où tous les calques ont été consommés.
+            lstLayer.setSelectedIndex(0);
+            
+            //On met à jour la liste des calques dans le composant de dessin
+            List<Layer> listlay = new ArrayList<>();
+            for(Object o : dlm.toArray()){
+                if(o instanceof Layer){
+                    Layer layer = (Layer)o;
+                    if(listlay.contains(layer)==false){
+                        listlay.add(layer);
+                    }
+                }
+            }
+            sh.setLayerList(listlay);
+            
+            //On met à jour le contrôle de dessin et on effectue des opérations de routine
+            sh.updateGeneralPath(lay.getGeneralPath());
+            sh.updateShapesList(lay.getShapesList());
+            lay.updateEndPoint();
+            tfAssCommands.setText(updateCommands());
+            shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
         }
     }//GEN-LAST:event_popmBoolOpIntersectActionPerformed
 
@@ -5774,6 +5831,29 @@ public class DrawingPanel extends javax.swing.JPanel {
             }
             //On ajoute notre calque résultant
             dlm.addElement(lay);
+            
+            //On sélectionne le calque (pour éviter que getCurrentLayer() soit null)
+            //en cas où tous les calques ont été consommés.
+            lstLayer.setSelectedIndex(0);
+            
+            //On met à jour la liste des calques dans le composant de dessin
+            List<Layer> listlay = new ArrayList<>();
+            for(Object o : dlm.toArray()){
+                if(o instanceof Layer){
+                    Layer layer = (Layer)o;
+                    if(listlay.contains(layer)==false){
+                        listlay.add(layer);
+                    }
+                }
+            }
+            sh.setLayerList(listlay);
+            
+            //On met à jour le contrôle de dessin et on effectue des opérations de routine
+            sh.updateGeneralPath(lay.getGeneralPath());
+            sh.updateShapesList(lay.getShapesList());
+            lay.updateEndPoint();
+            tfAssCommands.setText(updateCommands());
+            shapesFromCommands(tfAssCommands.getText(), lay, 0, 0, null, 0);
         }
     }//GEN-LAST:event_popmBoolOpExcluORActionPerformed
 
