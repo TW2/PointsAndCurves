@@ -498,7 +498,7 @@ public class DrawingPanel extends javax.swing.JPanel {
         Pattern pat = Pattern.compile("([a-z]*)\\s*(-*\\d*)\\s*(-*\\d*)\\s*");
         Matcher mat = pat.matcher(com);
         while(mat.find()){
-            //System.out.println(mat.group(1)+" <> "+mat.group(2)+" | "+mat.group(3));
+            System.out.println(mat.group(1)+" <> "+mat.group(2)+" | "+mat.group(3));
             try{
                 String param = mat.group(1);
                 if(param.equalsIgnoreCase("c")){
@@ -539,6 +539,10 @@ public class DrawingPanel extends javax.swing.JPanel {
                 }
                 if(param.equalsIgnoreCase("p")){
                     Command c = new Command(Command.Type.Extend); c.add_X(xs); c.add_Y(ys);
+                    commandList.add(c);
+                }
+                if(param.equalsIgnoreCase("") & commandList.get(commandList.size()-1).getType()==Command.Type.Line){
+                    Command c = new Command(Command.Type.Line); c.add_X(xs); c.add_Y(ys);
                     commandList.add(c);
                 }
                 if(param.equalsIgnoreCase("") & commandList.get(commandList.size()-1).getType()==Command.Type.Bezier){
@@ -2294,6 +2298,8 @@ public class DrawingPanel extends javax.swing.JPanel {
         popmDelete = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         popmUpdate = new javax.swing.JMenuItem();
+        jSeparator9 = new javax.swing.JPopupMenu.Separator();
+        popmShiftXY = new javax.swing.JMenuItem();
         popPenSize = new javax.swing.JPopupMenu();
         popmPenSize2 = new javax.swing.JRadioButtonMenuItem();
         popmPenSize4 = new javax.swing.JRadioButtonMenuItem();
@@ -2527,6 +2533,15 @@ public class DrawingPanel extends javax.swing.JPanel {
             }
         });
         popAssCom.add(popmUpdate);
+        popAssCom.add(jSeparator9);
+
+        popmShiftXY.setText("Shift...");
+        popmShiftXY.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmShiftXYActionPerformed(evt);
+            }
+        });
+        popAssCom.add(popmShiftXY);
 
         bgPenSize.add(popmPenSize2);
         popmPenSize2.setText("Taille du crayon : 02 px");
@@ -5861,6 +5876,17 @@ public class DrawingPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_popmBoolOpExcluORActionPerformed
 
+    private void popmShiftXYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmShiftXYActionPerformed
+        try{
+            int shiftX = Integer.parseInt(JOptionPane.showInputDialog("Put you shift on X:"));
+            int shiftY = Integer.parseInt(JOptionPane.showInputDialog("Put you shift on Y:"));
+            shapesFromCommands(tfAssCommands.getText(), getCurrentLayer(), shiftX, shiftY, null, 0);
+            tfAssCommands.setText(updateCommands());
+        }catch(Exception exc){
+            
+        }        
+    }//GEN-LAST:event_popmShiftXYActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgDraw;
     private javax.swing.ButtonGroup bgImageMove;
@@ -5915,6 +5941,7 @@ public class DrawingPanel extends javax.swing.JPanel {
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JPopupMenu.Separator jSeparator8;
+    private javax.swing.JPopupMenu.Separator jSeparator9;
     private javax.swing.JLabel lblAssCommands;
     private javax.swing.JLabel lblCoordinates;
     private javax.swing.JLabel lblDrawingAlpha;
@@ -5977,6 +6004,7 @@ public class DrawingPanel extends javax.swing.JPanel {
     private javax.swing.JMenuItem popmSelectionGeo3B;
     private javax.swing.JMenuItem popmSelectionGeoPlus;
     private javax.swing.JMenuItem popmSelectionSym;
+    private javax.swing.JMenuItem popmShiftXY;
     private javax.swing.JMenuItem popmUpdate;
     private javax.swing.JRadioButton rbOrnMainMoveOff;
     private javax.swing.JRadioButton rbOrnMainMoveOn;
